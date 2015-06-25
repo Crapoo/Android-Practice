@@ -11,7 +11,8 @@
         android:id="@+id/lvItems"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/etNewTask" />
+        android:layout_above="@+id/etNewTask"
+        android:choiceMode="multipleChoice" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -32,4 +33,5 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:onClick="addTask"/>
+
 </RelativeLayout>
