@@ -1,7 +1,9 @@
 package me.taroli.geoquizz;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,8 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class QuizzActivity extends ActionBarActivity {
+public class QuizzActivity extends Activity {
 
+    private static final String TAG = "QuizzActivity";
     private Button falseBtn;
     private Button trueBtn;
     private Button nextBtn;
@@ -30,6 +33,7 @@ public class QuizzActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_quizz);
 
         trueBtn = (Button) findViewById(R.id.true_btn);
@@ -63,7 +67,36 @@ public class QuizzActivity extends ActionBarActivity {
             }
         });
         setQuestion();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
     }
 
     private void setQuestion() {
