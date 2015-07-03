@@ -1,6 +1,7 @@
 package me.taroli.geoquizz;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -21,7 +22,9 @@ public class QuizzActivity extends Activity {
     private Button falseBtn;
     private Button trueBtn;
     private Button nextBtn;
+    private Button cheatBtn;
     private TextView questionTv;
+    private boolean isCheater;
 
     private TrueFalse[] questions = new TrueFalse[]{
             new TrueFalse(R.string.question_africa, true),
@@ -55,10 +58,11 @@ public class QuizzActivity extends Activity {
             }
         });
 
-        nextBtn = (Button) findViewById(R.id.next_button);
+        nextBtn = (Button) findViewById(R.id.next_btn);
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isCheater = false;
                 nextQuestion();
             }
         });
@@ -70,8 +74,19 @@ public class QuizzActivity extends Activity {
             }
         });
 
+        cheatBtn = (Button) findViewById(R.id.cheat_btn);
+        cheatBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(QuizzActivity.this, CheatActivity.class);
+                i.putExtra(CheatActivity.EXTRA_ANSWER,
+                        questions[currentIndex].isTrueQuestion());
+                startActivityForResult(i, 0);
+            }
+        });
+
         if (savedInstanceState != null) {
-            currentIndex = savedInstanceState.getInt(INDEX);
+            currentIndex = savedInstanceState.getInt(INDEX, 0);
         }
 
         setQuestion();
@@ -82,6 +97,14 @@ public class QuizzActivity extends Activity {
         super.onSaveInstanceState(outState);
         Log.i(TAG, "onSaveInstanceState");
         outState.putInt(INDEX, currentIndex);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) {
+            return;
+        }
+        isCheater = data.getBooleanExtra(CheatActivity.EXTRA_SHOWN, false);
     }
 
     @Override
@@ -127,11 +150,15 @@ public class QuizzActivity extends Activity {
     private void verifyAnswer(boolean userAnswer) {
         boolean answer = questions[currentIndex].isTrueQuestion();
         int res;
-        if (userAnswer == answer)
-            res = R.string.correct_answer;
-        else
-            res = R.string.wrong_answer;
-
+        if (isCheater) {
+            res = R.string.judging;
+        } else {
+            if (userAnswer == answer) {
+                res = R.string.correct_answer;
+            } else {
+                res = R.string.wrong_answer;
+            }
+        }
         Toast.makeText(this, res, Toast.LENGTH_SHORT).show();
         nextQuestion();
     }

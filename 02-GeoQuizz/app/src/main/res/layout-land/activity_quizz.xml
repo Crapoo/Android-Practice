@@ -29,7 +29,14 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/next_button"
+        android:id="@+id/cheat_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:text="@string/cheat_btn"/>
+
+    <Button
+        android:id="@+id/next_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
