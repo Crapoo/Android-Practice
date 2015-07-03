@@ -56,6 +56,12 @@ public class QuizzActivity extends ActionBarActivity {
             }
         });
         questionTv = (TextView) findViewById(R.id.question_textview);
+        questionTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextQuestion();
+            }
+        });
         setQuestion();
 
     }
