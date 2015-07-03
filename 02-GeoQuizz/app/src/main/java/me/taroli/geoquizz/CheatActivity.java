@@ -15,9 +15,12 @@ public class CheatActivity extends Activity {
     public static  final String EXTRA_ANSWER = "me.taroli.geoquizz.answer_true";
     public static final String EXTRA_SHOWN = "me.taroli.geoquizz.answer_shown";
 
+    private static final String ISCHEATER = "isCheater";
+
     private boolean answer;
     private TextView answerTv;
     private Button showAnswer;
+    private boolean isCheater = false;
 
     private void setAnswerShownResult(boolean isAnswerShown) {
         Intent data = new Intent();
@@ -30,7 +33,7 @@ public class CheatActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cheat);
 
-        setAnswerShownResult(false);
+        setAnswerShownResult(isCheater);
 
         answer = getIntent().getBooleanExtra(EXTRA_ANSWER, false);
 
@@ -45,8 +48,15 @@ public class CheatActivity extends Activity {
                 } else {
                     answerTv.setText(R.string.false_btn);
                 }
-                setAnswerShownResult(true);
+                isCheater = true;
+                setAnswerShownResult(isCheater);
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ISCHEATER, isCheater);
     }
 }

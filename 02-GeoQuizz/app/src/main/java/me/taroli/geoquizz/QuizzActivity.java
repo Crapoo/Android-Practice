@@ -18,6 +18,7 @@ public class QuizzActivity extends Activity {
 
     private static final String TAG = "QuizzActivity";
     private static final String INDEX = "index";
+    private static final String ISCHEATER = "isCheater";
 
     private Button falseBtn;
     private Button trueBtn;
@@ -87,6 +88,7 @@ public class QuizzActivity extends Activity {
 
         if (savedInstanceState != null) {
             currentIndex = savedInstanceState.getInt(INDEX, 0);
+            isCheater = savedInstanceState.getBoolean(ISCHEATER, false);
         }
 
         setQuestion();
@@ -97,6 +99,7 @@ public class QuizzActivity extends Activity {
         super.onSaveInstanceState(outState);
         Log.i(TAG, "onSaveInstanceState");
         outState.putInt(INDEX, currentIndex);
+        outState.putBoolean(ISCHEATER, isCheater);
     }
 
     @Override
