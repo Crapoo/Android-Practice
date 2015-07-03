@@ -3,6 +3,7 @@ package me.taroli.geoquizz;
 import android.app.Activity;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +16,8 @@ import android.widget.Toast;
 public class QuizzActivity extends Activity {
 
     private static final String TAG = "QuizzActivity";
+    private static final String INDEX = "index";
+
     private Button falseBtn;
     private Button trueBtn;
     private Button nextBtn;
@@ -66,7 +69,19 @@ public class QuizzActivity extends Activity {
                 nextQuestion();
             }
         });
+
+        if (savedInstanceState != null) {
+            currentIndex = savedInstanceState.getInt(INDEX);
+        }
+
         setQuestion();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.i(TAG, "onSaveInstanceState");
+        outState.putInt(INDEX, currentIndex);
     }
 
     @Override
