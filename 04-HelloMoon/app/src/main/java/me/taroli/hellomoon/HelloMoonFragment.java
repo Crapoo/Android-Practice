@@ -44,6 +44,8 @@ public class HelloMoonFragment extends Fragment {
                 updateButtons();
             }
         });
+
+        updateButtons();
         return v;
     }
 

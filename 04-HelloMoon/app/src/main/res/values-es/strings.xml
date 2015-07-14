@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <string name="app_name">HolaLuna</string>
+  <string name="play">Tocar</string>
+  <string name="stop">Detener</string>
+  <string name="description">Neil Armstrong pisando
+            la luna</string>
+</resources>
