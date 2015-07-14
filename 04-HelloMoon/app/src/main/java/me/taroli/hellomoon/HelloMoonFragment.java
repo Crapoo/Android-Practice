@@ -26,6 +26,7 @@ public class HelloMoonFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 player.play(getActivity());
+                updateButtons();
             }
         });
 
@@ -34,9 +35,15 @@ public class HelloMoonFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 player.stop();
+                updateButtons();
             }
         });
         return v;
+    }
+
+    private void updateButtons() {
+        boolean playing = player.isPlaying();
+        playBtn.setEnabled(!playing);
     }
 
     @Override

@@ -27,7 +27,10 @@ public class AudioPlayer {
                 stop();
             }
         });
-
         player.start();
+    }
+
+    public boolean isPlaying() {
+        return player != null;
     }
 }
