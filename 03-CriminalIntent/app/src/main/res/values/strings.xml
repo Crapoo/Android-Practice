@@ -8,4 +8,10 @@
     <string name="crime_solved_label">Solved?</string>
     <string name="crimes_title">Crimes</string>
     <string name="date_picker_title">Date of crime:</string>
+
+    <string name="new_crime">New crime</string>
+    <string name="show_sub">Show subtitle</string>
+    <string name="hide_sub">Hide subtitle</string>
+    <string name="subtitle">If you see something, say something</string>
+    <string name="delete_crime">Delete</string>
 </resources>

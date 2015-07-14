@@ -45,6 +45,12 @@ public class CrimePagerActivity extends FragmentActivity {
         for (int i = 0; i < crimes.size(); i++) {
             if (crimes.get(i).getId().equals(id)) {
                 viewPager.setCurrentItem(i);
+                String title = crimes.get(i).getTitle();
+                if (title == null || title == "") {
+                    setTitle(R.string.new_crime);
+                } else {
+                    setTitle(title);
+                }
                 break;
             }
         }
