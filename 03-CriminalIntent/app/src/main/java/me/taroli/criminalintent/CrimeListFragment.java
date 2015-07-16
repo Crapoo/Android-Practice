@@ -33,6 +33,7 @@ public class CrimeListFragment extends ListFragment {
 
         getActivity().setTitle(R.string.crimes_title);
         crimes = CrimeLab.getINSTANCE(getActivity()).getCrimes();
+        CrimeLab.getINSTANCE(getActivity()).sortCrimes();
 
         adapter = new CrimeAdapter(crimes);
         setListAdapter(adapter);
