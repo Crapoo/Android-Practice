@@ -1,6 +1,7 @@
 package me.taroli.criminalintent;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,14 +12,27 @@ import java.util.UUID;
  * Created by Matt on 13/07/15.
  */
 public class CrimeLab {
-    private static CrimeLab INSTANCE;
+    private static final String TAG = "CrimeLab";
+    private static final String FILE = "crimes.json";
+
+    private static CrimeLab instance;
+
     private Context appContext;
     private ArrayList<Crime> crimes;
     private Comparator<Crime> comp;
+    private JSONSerializer jsonSerializer;
 
     private CrimeLab(Context appContext) {
         this.appContext = appContext;
-        crimes = new ArrayList<Crime>();
+        jsonSerializer = new JSONSerializer(appContext, FILE);
+
+        try {
+            crimes = jsonSerializer.loadCrimes();
+        } catch (Exception e) {
+            crimes = new ArrayList<Crime>();
+            Log.e(TAG, "Error loading crimes: ", e);
+        }
+
         comp = new Comparator<Crime>() {
             @Override
             public int compare(Crime lhs, Crime rhs) {
@@ -28,10 +42,10 @@ public class CrimeLab {
     }
 
     public static CrimeLab getINSTANCE(Context c) {
-        if (INSTANCE == null) {
-            INSTANCE = new CrimeLab(c.getApplicationContext());
+        if (instance == null) {
+            instance = new CrimeLab(c.getApplicationContext());
         }
-        return INSTANCE;
+        return instance;
     }
 
     public void addCrime(Crime c) {
@@ -53,5 +67,15 @@ public class CrimeLab {
             }
         }
         return null;
+    }
+
+    public boolean saveCrimes() {
+        try {
+            jsonSerializer.saveCrimes(crimes);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving crimes: ", e);
+            return false;
+        }
     }
 }

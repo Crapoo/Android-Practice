@@ -52,7 +52,7 @@ public class CrimeListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime_list, null);
-        
+
         addCrimeBtn = (Button) v.findViewById(R.id.add_crime);
         addCrimeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
