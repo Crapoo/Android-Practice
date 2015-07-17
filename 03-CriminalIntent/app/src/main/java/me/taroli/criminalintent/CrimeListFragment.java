@@ -52,19 +52,12 @@ public class CrimeListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime_list, null);
-
-        ListView list = (ListView) v.findViewById(android.R.id.list);
-        list.setEmptyView(v.findViewById(android.R.id.empty));
-
+        
         addCrimeBtn = (Button) v.findViewById(R.id.add_crime);
         addCrimeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Crime crime = new Crime();
-                CrimeLab.getINSTANCE(getActivity()).addCrime(crime);
-                Intent i = new Intent(getActivity(), CrimePagerActivity.class);
-                i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
-                startActivity(i);
+                addCrime();
             }
         });
 
@@ -98,11 +91,7 @@ public class CrimeListFragment extends ListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_item_new_crime:
-                Crime crime = new Crime();
-                CrimeLab.getINSTANCE(getActivity()).addCrime(crime);
-                Intent i = new Intent(getActivity(), CrimePagerActivity.class);
-                i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
-                startActivityForResult(i, 0);
+                addCrime();
                 return true;
             case R.id.menu_item_show_subtitle:
                 if (getActivity().getActionBar().getSubtitle() == null) {
@@ -127,6 +116,14 @@ public class CrimeListFragment extends ListFragment {
         Intent i = new Intent(getActivity(), CrimePagerActivity.class);
         i.putExtra(CrimeFragment.EXTRA_CRIME_ID, c.getId());
         startActivity(i);
+    }
+
+    private void addCrime() {
+        Crime crime = new Crime();
+        CrimeLab.getINSTANCE(getActivity()).addCrime(crime);
+        Intent i = new Intent(getActivity(), CrimePagerActivity.class);
+        i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
+        startActivityForResult(i, 0);
     }
 
     private class CrimeAdapter extends ArrayAdapter<Crime> {
