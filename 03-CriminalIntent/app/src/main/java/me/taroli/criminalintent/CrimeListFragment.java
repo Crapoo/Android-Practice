@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ public class CrimeListFragment extends ListFragment {
     public ArrayList<Crime> crimes;
     private ArrayAdapter<Crime> adapter;
     private boolean subtitleVisible;
+    private Button addCrimeBtn;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,7 +51,22 @@ public class CrimeListFragment extends ListFragment {
     @TargetApi(11)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = super.onCreateView(inflater, container, savedInstanceState);
+        View v = inflater.inflate(R.layout.fragment_crime_list, null);
+
+        ListView list = (ListView) v.findViewById(android.R.id.list);
+        list.setEmptyView(v.findViewById(android.R.id.empty));
+
+        addCrimeBtn = (Button) v.findViewById(R.id.add_crime);
+        addCrimeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Crime crime = new Crime();
+                CrimeLab.getINSTANCE(getActivity()).addCrime(crime);
+                Intent i = new Intent(getActivity(), CrimePagerActivity.class);
+                i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
+                startActivity(i);
+            }
+        });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (subtitleVisible) {
