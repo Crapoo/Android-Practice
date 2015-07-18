@@ -52,6 +52,9 @@ public class CrimeLab {
         crimes.add(c);
     }
 
+    public void deleteCrime(Crime c) {
+        crimes.remove(c);
+    }
     public void sortCrimes() {
         Collections.sort(crimes, comp);
     }

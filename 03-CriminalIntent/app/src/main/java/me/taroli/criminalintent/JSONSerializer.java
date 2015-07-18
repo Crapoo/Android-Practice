@@ -1,7 +1,6 @@
 package me.taroli.criminalintent;
 
 import android.content.Context;
-import android.util.JsonToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,8 +15,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-
-import me.taroli.criminalintent.Crime;
 
 /**
  * Created by Matt on 17/07/15.
