@@ -3,6 +3,9 @@ package me.taroli.criminalintent;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.hardware.Camera;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +23,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -36,8 +40,9 @@ public class CrimeFragment extends Fragment {
     private Crime crime;
     private EditText titleField;
 
-    private Button dateButton;
+    private Button dateBtn;
     private CheckBox solvedCheckBox;
+    private ImageButton cameraBtn;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -119,9 +124,9 @@ public class CrimeFragment extends Fragment {
         });
 
 
-        dateButton = (Button) v.findViewById(R.id.crime_date_btn);
+        dateBtn = (Button) v.findViewById(R.id.crime_date_btn);
         updateDate();
-        dateButton.setOnClickListener(new View.OnClickListener() {
+        dateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -139,6 +144,23 @@ public class CrimeFragment extends Fragment {
                 crime.setSolved(isChecked);
             }
         });
+
+        cameraBtn = (ImageButton) v.findViewById(R.id.crime_imageBtn);
+        cameraBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), CrimeCameraActivity.class);
+                startActivity(i);
+            }
+        });
+        /* Check if camera exists. If not, disable button */
+        PackageManager pm = getActivity().getPackageManager();
+        boolean hasCamera = pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)
+                || pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)
+                || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && Camera.getNumberOfCameras() > 0);
+        if (!hasCamera) {
+            cameraBtn.setEnabled(false);
+        }
         return v;
     }
 
@@ -156,6 +178,6 @@ public class CrimeFragment extends Fragment {
 
     private void updateDate() {
         DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
-        dateButton.setText(df.format(crime.getDate()));
+        dateBtn.setText(df.format(crime.getDate()));
     }
 }
