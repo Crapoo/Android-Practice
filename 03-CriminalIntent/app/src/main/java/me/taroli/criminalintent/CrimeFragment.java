@@ -38,6 +38,7 @@ public class CrimeFragment extends Fragment {
     public static final String EXTRA_CRIME_ID = "me.taroli.criminalIntent.crime.id";
     private static final String TAG = "CrimeFragment";
     public static final String DIALOG_DATE = "date";
+    public static final String DIALOG_IMAGE = "photo";
     private static final int REQUEST_DATE = 0;
     public static final int REQUEST_PHOTO = 1;
 
@@ -174,6 +175,19 @@ public class CrimeFragment extends Fragment {
         }
 
         photoView = (ImageView) v.findViewById(R.id.crime_imageView);
+        photoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Photo p = crime.getPhoto();
+                if (p == null) {
+                    return;
+                }
+
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                String path = getActivity().getFileStreamPath(p.getFilename()).getAbsolutePath();
+                ImageFragment.newInstance(path).show(fm, DIALOG_IMAGE);
+            }
+        });
         return v;
     }
 
