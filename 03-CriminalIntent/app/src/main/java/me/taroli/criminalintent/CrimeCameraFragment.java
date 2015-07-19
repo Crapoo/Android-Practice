@@ -1,7 +1,9 @@
 package me.taroli.criminalintent;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +28,7 @@ import java.util.UUID;
 @SuppressWarnings("deprecation")
 public class CrimeCameraFragment extends Fragment {
     private static final String TAG = "CrimeCameraFragment";
+    public static final String EXTRA_PHOTO_FILENAME = "me.taroli.criminalIntent.photo_filename";
 
     /* TODO Camera deprecated */
     private Camera camera;
@@ -42,14 +45,14 @@ public class CrimeCameraFragment extends Fragment {
     private Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            String file = UUID.randomUUID().toString() + ".jpg";
+            String filename = UUID.randomUUID().toString() + ".jpg";
             FileOutputStream os = null;
             boolean success = true;
             try {
-                os = getActivity().openFileOutput(file, Context.MODE_PRIVATE);
+                os = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
                 os.write(data);
             } catch(Exception e ){
-                Log.e(TAG, "Error saving picture " + file, e);
+                Log.e(TAG, "Error saving picture " + filename, e);
                 success = false;
             } finally {
                 try {
@@ -57,13 +60,17 @@ public class CrimeCameraFragment extends Fragment {
                         os.close();
                     }
                 } catch (Exception e){
-                    Log.e(TAG, "Error closing file " + file, e);
+                    Log.e(TAG, "Error closing file " + filename, e);
                     success = false;
                 }
             }
 
             if (success) {
-                Log.i(TAG, "JPEG saved at " + file);
+                Intent i = new Intent();
+                i.putExtra(EXTRA_PHOTO_FILENAME, filename);
+                getActivity().setResult(Activity.RESULT_OK, i);
+            } else {
+                getActivity().setResult(Activity.RESULT_CANCELED);
             }
             getActivity().finish();
         }
