@@ -1,6 +1,7 @@
 package me.taroli.criminalintent;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,8 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Matt on 19/07/15.
@@ -27,6 +30,44 @@ public class CrimeCameraFragment extends Fragment {
     /* TODO Camera deprecated */
     private Camera camera;
     private SurfaceView surfaceView;
+    private View progressContainer;
+
+    private Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
+        @Override
+        public void onShutter() {
+            progressContainer.setVisibility(View.VISIBLE);
+        }
+    };
+
+    private Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+            String file = UUID.randomUUID().toString() + ".jpg";
+            FileOutputStream os = null;
+            boolean success = true;
+            try {
+                os = getActivity().openFileOutput(file, Context.MODE_PRIVATE);
+                os.write(data);
+            } catch(Exception e ){
+                Log.e(TAG, "Error saving picture " + file, e);
+                success = false;
+            } finally {
+                try {
+                    if (os != null) {
+                        os.close();
+                    }
+                } catch (Exception e){
+                    Log.e(TAG, "Error closing file " + file, e);
+                    success = false;
+                }
+            }
+
+            if (success) {
+                Log.i(TAG, "JPEG saved at " + file);
+            }
+            getActivity().finish();
+        }
+    };
 
     @Nullable
     @Override
@@ -37,7 +78,7 @@ public class CrimeCameraFragment extends Fragment {
         takePicBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().finish();
+                camera.takePicture(shutterCallback, null, jpegCallback);
             }
         });
 
@@ -65,6 +106,8 @@ public class CrimeCameraFragment extends Fragment {
                 Camera.Parameters parameters = camera.getParameters();
                 Camera.Size s = getBestSupportedSize(parameters.getSupportedPreviewSizes(), width, height);
                 parameters.setPreviewSize(s.width, s.height);
+                s = getBestSupportedSize(parameters.getSupportedPictureSizes(), width, height);
+                parameters.setPictureSize(s.width, s.height);
                 camera.setParameters(parameters);
                 try {
                     camera.startPreview();
@@ -82,6 +125,9 @@ public class CrimeCameraFragment extends Fragment {
                 }
             }
         });
+
+        progressContainer = v.findViewById(R.id.crime_camera_progressContainer);
+        progressContainer.setVisibility(View.INVISIBLE);
 
         return v;
     }
