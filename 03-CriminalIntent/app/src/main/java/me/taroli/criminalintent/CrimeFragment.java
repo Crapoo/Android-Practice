@@ -13,7 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -79,6 +80,11 @@ public class CrimeFragment extends Fragment {
     public void onPause() {
         super.onPause();
         CrimeLab.getINSTANCE(getActivity()).saveCrimes();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -188,7 +194,27 @@ public class CrimeFragment extends Fragment {
                 ImageFragment.newInstance(path).show(fm, DIALOG_IMAGE);
             }
         });
+        if (crime.getPhoto() != null) {
+            registerForContextMenu(photoView);
+        }
         return v;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        getActivity().getMenuInflater().inflate(R.menu.crime_fragment_context, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_item_delete_photo:
+                deletePhoto();
+                unregisterForContextMenu(photoView);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 
     @Override
@@ -203,11 +229,24 @@ public class CrimeFragment extends Fragment {
         } else if (requestCode == REQUEST_PHOTO) {
             String filename = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
             if (filename != null) {
+                if (crime.getPhoto() != null) {
+                    deletePhoto();
+                }
+
                 Photo photo = new Photo(filename);
                 crime.setPhoto(photo);
+                registerForContextMenu(photoView);
                 showPhoto();
             }
         }
+    }
+
+    private void deletePhoto() {
+        String path = getActivity().getFileStreamPath(crime.getPhoto().getFilename()).getAbsolutePath();
+        File file = new File(path);
+        file.delete();
+        crime.setPhoto(null);
+        photoView.setImageDrawable(null);
     }
 
     @Override

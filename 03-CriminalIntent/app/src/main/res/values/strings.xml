@@ -16,4 +16,5 @@
     <string name="delete_crime">Delete</string>
     <string name="crime_list_empty">There is no crime yet...</string>
     <string name="take">Take!</string>
+    <string name="delete_photo">Delete photo</string>
 </resources>
