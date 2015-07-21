@@ -4,10 +4,13 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
@@ -42,6 +45,7 @@ public class CrimeFragment extends Fragment {
     public static final String DIALOG_IMAGE = "photo";
     private static final int REQUEST_DATE = 0;
     public static final int REQUEST_PHOTO = 1;
+    public static final int REQUEST_CONTACT = 2;
 
     private Crime crime;
     private EditText titleField;
@@ -50,6 +54,8 @@ public class CrimeFragment extends Fragment {
     private CheckBox solvedCheckBox;
     private ImageButton cameraBtn;
     private ImageView photoView;
+    private Button reportBtn;
+    private Button suspectBtn;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -199,7 +205,7 @@ public class CrimeFragment extends Fragment {
             registerForContextMenu(photoView);
         }
 
-        Button reportBtn = (Button) v.findViewById(R.id.crime_reportBtn);
+        reportBtn = (Button) v.findViewById(R.id.crime_reportBtn);
         reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -211,6 +217,20 @@ public class CrimeFragment extends Fragment {
                 startActivity(i);
             }
         });
+
+        suspectBtn = (Button) v.findViewById(R.id.crime_suspectBtn);
+        suspectBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                startActivityForResult(i, REQUEST_CONTACT);
+            }
+        });
+
+        if (crime.getSuspect() != null) {
+            suspectBtn.setText(crime.getSuspect());
+        }
+
         return v;
     }
 
@@ -236,22 +256,44 @@ public class CrimeFragment extends Fragment {
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
-        if (requestCode == REQUEST_DATE) {
-            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-            crime.setDate(date);
-            updateDate();
-        } else if (requestCode == REQUEST_PHOTO) {
-            String filename = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
-            if (filename != null) {
-                if (crime.getPhoto() != null) {
-                    deletePhoto();
+        switch (requestCode) {
+            case REQUEST_DATE:
+                Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+                crime.setDate(date);
+                updateDate();
+                return;
+            case REQUEST_PHOTO:
+                String filename = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
+                if (filename != null) {
+                    if (crime.getPhoto() != null) {
+                        deletePhoto();
+                    }
+
+                    Photo photo = new Photo(filename);
+                    crime.setPhoto(photo);
+                    registerForContextMenu(photoView);
+                    showPhoto();
+                }
+                return;
+            case REQUEST_CONTACT:
+                Uri contactUri = data.getData();
+
+                String[] fields = {ContactsContract.Contacts.DISPLAY_NAME};
+                Cursor c = getActivity().getContentResolver()
+                        .query(contactUri, fields, null, null, null);
+                if (c.getCount() == 0) {
+                    c.close();
+                    return;
                 }
 
-                Photo photo = new Photo(filename);
-                crime.setPhoto(photo);
-                registerForContextMenu(photoView);
-                showPhoto();
-            }
+                c.moveToFirst();
+                String suspect = c.getString(0);
+                crime.setSuspect(suspect);
+                suspectBtn.setText(suspect);
+                c.close();
+                return;
+            default:
+                return;
         }
     }
 
