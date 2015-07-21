@@ -194,9 +194,22 @@ public class CrimeFragment extends Fragment {
                 ImageFragment.newInstance(path).show(fm, DIALOG_IMAGE);
             }
         });
+
         if (crime.getPhoto() != null) {
             registerForContextMenu(photoView);
         }
+
+        Button reportBtn = (Button) v.findViewById(R.id.crime_reportBtn);
+        reportBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+                startActivity(i);
+            }
+        });
         return v;
     }
 
@@ -207,7 +220,7 @@ public class CrimeFragment extends Fragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.menu_item_delete_photo:
                 deletePhoto();
                 unregisterForContextMenu(photoView);
@@ -269,5 +282,28 @@ public class CrimeFragment extends Fragment {
         }
 
         photoView.setImageDrawable(b);
+    }
+
+    private String getCrimeReport() {
+        String solved = null;
+        if (crime.isSolved()) {
+            solved = getString(R.string.crime_report_solved);
+        } else {
+            solved = getString(R.string.crime_report_unsolved);
+        }
+
+        DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
+        String dateString = df.format(crime.getDate()).toString();
+
+        String suspect = crime.getSuspect();
+        if (suspect == null) {
+            suspect = getString(R.string.crime_report_no_suspect);
+        } else {
+            suspect = getString(R.string.crime_report_no_suspect, suspect);
+        }
+
+        String report = getString(R.string.crime_report_msg, crime.getTitle(),
+                dateString, solved, suspect);
+        return report;
     }
 }

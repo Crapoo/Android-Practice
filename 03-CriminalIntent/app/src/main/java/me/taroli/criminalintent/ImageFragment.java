@@ -1,5 +1,6 @@
 package me.taroli.criminalintent;
 
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
