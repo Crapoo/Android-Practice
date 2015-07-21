@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">CriminalIntent</string>
+
+    <string name="title_activity_crime">CrimeActivity</string>
+    <string name="crime_title_hint">Entrez un titre pour ce crime...</string>
+    <string name="crime_title_label">Titre</string>
+    <string name="crime_details_label">Détails</string>
+    <string name="crime_solved_label">Résolu?</string>
+    <string name="crimes_title">Crimes</string>
+    <string name="date_picker_title">Date du crime:</string>
+
+    <string name="new_crime">Nouveau crime</string>
+    <string name="show_sub">Afficher sous-titre</string>
+    <string name="hide_sub">Cacher sous-titre</string>
+    <string name="subtitle">Si vous voyez quelque chose, dites quelque chose.</string>
+    <string name="delete_crime">Supprimer</string>
+    <string name="crime_list_empty">Pas encore de crime...</string>
+    <string name="take">Photographier!</string>
+    <string name="delete_photo">Supprimer photo</string>
+
+    <string name="crime_suspect">Choisir un suspect</string>
+    <string name="crime_report">Envoyer un rapport de crime</string>
+    
+    <string name="crime_report_msg">%1$s! Le crime a été découvert le %2$s. %3$s, et %4$s</string>
+    <string name="crime_report_solved">Le cas est résolu</string>
+    <string name="crime_report_unsolved">Le cas n\'est pas résolu</string>
+    <string name="crime_report_suspect">le suspect est %s.</string>
+    <string name="crime_report_no_suspect">il n\'y a pas de suspect.</string>
+    <string name="crime_report_subject">CriminalIntent, rapport de crime</string>
+    <string name="send_report">Envoyer le rapport</string>
+</resources>
