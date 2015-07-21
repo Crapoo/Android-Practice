@@ -342,7 +342,7 @@ public class CrimeFragment extends Fragment {
         if (suspect == null) {
             suspect = getString(R.string.crime_report_no_suspect);
         } else {
-            suspect = getString(R.string.crime_report_no_suspect, suspect);
+            suspect = getString(R.string.crime_report_suspect, suspect);
         }
 
         String report = getString(R.string.crime_report_msg, crime.getTitle(),
