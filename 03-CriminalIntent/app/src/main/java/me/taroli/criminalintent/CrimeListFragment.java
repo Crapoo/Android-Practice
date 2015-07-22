@@ -1,6 +1,7 @@
 package me.taroli.criminalintent;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ public class CrimeListFragment extends ListFragment {
     private ArrayAdapter<Crime> adapter;
     private boolean subtitleVisible;
     private Button addCrimeBtn;
+    private Callbacks callbacks;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -185,20 +187,32 @@ public class CrimeListFragment extends ListFragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        callbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        callbacks = null;
+    }
+
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Crime c = ((CrimeAdapter) getListAdapter()).getItem(position);
-
-        Intent i = new Intent(getActivity(), CrimePagerActivity.class);
-        i.putExtra(CrimeFragment.EXTRA_CRIME_ID, c.getId());
-        startActivity(i);
+        callbacks.onCrimeSelected(c);
     }
 
     private void addCrime() {
         Crime crime = new Crime();
         CrimeLab.getINSTANCE(getActivity()).addCrime(crime);
-        Intent i = new Intent(getActivity(), CrimePagerActivity.class);
-        i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
-        startActivityForResult(i, 0);
+        ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
+        callbacks.onCrimeSelected(crime);
+    }
+
+    public void updateUI() {
+        ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
     private class CrimeAdapter extends ArrayAdapter<Crime> {
@@ -228,4 +242,9 @@ public class CrimeListFragment extends ListFragment {
             return convertView;
         }
     }
+
+    public interface Callbacks {
+        void onCrimeSelected(Crime crime);
+    }
+
 }

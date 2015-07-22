@@ -56,6 +56,7 @@ public class CrimeFragment extends Fragment {
     private ImageView photoView;
     private Button reportBtn;
     private Button suspectBtn;
+    private Callbacks callbacks;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -139,6 +140,8 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 crime.setTitle(s.toString());
+                callbacks.onCrimeUpdated(crime);
+                getActivity().setTitle(crime.getTitle());
             }
 
             @Override
@@ -166,6 +169,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 crime.setSolved(isChecked);
+                callbacks.onCrimeUpdated(crime);
             }
         });
 
@@ -261,6 +265,7 @@ public class CrimeFragment extends Fragment {
                 Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
                 crime.setDate(date);
                 updateDate();
+                callbacks.onCrimeUpdated(crime);
                 return;
             case REQUEST_PHOTO:
                 String filename = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
@@ -271,6 +276,7 @@ public class CrimeFragment extends Fragment {
 
                     Photo photo = new Photo(filename);
                     crime.setPhoto(photo);
+                    callbacks.onCrimeUpdated(crime);
                     registerForContextMenu(photoView);
                     showPhoto();
                 }
@@ -289,6 +295,7 @@ public class CrimeFragment extends Fragment {
                 c.moveToFirst();
                 String suspect = c.getString(0);
                 crime.setSuspect(suspect);
+                callbacks.onCrimeUpdated(crime);
                 suspectBtn.setText(suspect);
                 c.close();
                 return;
@@ -309,6 +316,18 @@ public class CrimeFragment extends Fragment {
     public void onStop() {
         super.onStop();
         PictureUtils.cleanImageView(photoView);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        callbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        callbacks = null;
     }
 
     private void updateDate() {
@@ -352,5 +371,9 @@ public class CrimeFragment extends Fragment {
         String report = getString(R.string.crime_report_msg, crime.getTitle(),
                 dateString, solved, suspect);
         return report;
+    }
+
+    public interface Callbacks {
+        void onCrimeUpdated(Crime crime);
     }
 }
