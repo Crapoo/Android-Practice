@@ -26,6 +26,7 @@
     <string name="crime_report_unsolved">Le cas n\'est pas résolu</string>
     <string name="crime_report_suspect">le suspect est %s.</string>
     <string name="crime_report_no_suspect">il n\'y a pas de suspect.</string>
+    <string name="crime_report_culprit">le coupable est %s.</string>
     <string name="crime_report_subject">CriminalIntent, rapport de crime</string>
     <string name="send_report">Envoyer le rapport</string>
 </resources>
