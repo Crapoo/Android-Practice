@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -46,15 +47,20 @@ public class LauncherFragment extends ListFragment {
         });
 
         ArrayAdapter<ResolveInfo> adapter = new ArrayAdapter<ResolveInfo>(
-                getActivity(), android.R.layout.simple_list_item_1, activities) {
+                getActivity(), R.layout.list_item_apps, activities) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
+                if (convertView == null) {
+                    convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_apps, null);
+                }
+
                 PackageManager pm = getActivity().getPackageManager();
-                View v = super.getView(position, convertView, parent);
-                TextView tv = (TextView) v;
                 ResolveInfo ri = getItem(position);
+                ImageView iv = (ImageView) convertView.findViewById(R.id.list_item_app_iconImageView);
+                iv.setImageDrawable(ri.loadIcon(pm));
+                TextView tv = (TextView) convertView.findViewById(R.id.list_item_app_titleTextView);
                 tv.setText(ri.loadLabel(pm));
-                return v;
+                return convertView;
             }
         };
 
