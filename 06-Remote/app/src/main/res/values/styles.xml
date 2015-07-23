@@ -5,5 +5,12 @@
     <style name="RemoteBtn">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">#556699</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:layout_margin">3dp</item>
+    </style>
+
+    <style name="RemoteBtn.actionBtn">
+        <item name="android:textStyle">bold</item>
     </style>
 </resources>

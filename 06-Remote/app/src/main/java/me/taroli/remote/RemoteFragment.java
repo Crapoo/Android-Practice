@@ -40,7 +40,7 @@ public class RemoteFragment extends Fragment {
                 }
             }
         };
-        
+
         TableLayout tableLayout = (TableLayout) v.findViewById(R.id.fragment_remote_tableLayout);
         int number = 1;
         for (int i = 2; i < tableLayout.getChildCount() - 1; i++) {
