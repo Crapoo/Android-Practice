@@ -1,9 +1,8 @@
-<TableLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/fragment_remote_tableLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:stretchColumns="*" >
+    android:stretchColumns="*">
 
     <TextView
         android:id="@+id/fragment_remote_selectedTextView"
@@ -18,35 +17,36 @@
         android:id="@+id/fragment_remote_workingTextView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_margin="15dp"
+        android:layout_weight="1"
         android:background="#555"
         android:gravity="center"
         android:text="0"
         android:textColor="#ccc"
-        android:textSize="20dp"/>
+        android:textSize="20dp" />
 
-    <TableRow
-        android:layout_weight="1">
+    <include
+        layout="@layout/button_row"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/fragment_remote_zeroBtn"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:text="0"/>
+    <include
+        layout="@layout/button_row"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/fragment_remote_oneBtn"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:text="1"/>
+    <include
+        layout="@layout/button_row"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/fragment_remote_enterBtn"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:text="Enter"/>
-
-    </TableRow>
+    <include
+        layout="@layout/button_row"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 </TableLayout>
