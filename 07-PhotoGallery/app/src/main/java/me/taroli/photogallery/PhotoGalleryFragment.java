@@ -1,7 +1,10 @@
 package me.taroli.photogallery;
 
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +30,7 @@ public class PhotoGalleryFragment extends Fragment {
     private int currentPage = 1;
     private int fetchedPage = 0;
     private int gridScrollPosition;
+    private ThumbnailDownloader<ImageView> thumbnailThread;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,6 +39,19 @@ public class PhotoGalleryFragment extends Fragment {
         setRetainInstance(true);
 
         new FetchItemsTask().execute();
+
+        thumbnailThread = new ThumbnailDownloader<ImageView>(new Handler());
+        thumbnailThread.setListener(new ThumbnailDownloader.Listener<ImageView>() {
+            @Override
+            public void onThumbnailDownloaded(ImageView imageView, Bitmap thumbnail) {
+                if (isVisible()) {
+                    imageView.setImageBitmap(thumbnail);
+                }
+            }
+        });
+        thumbnailThread.start();
+        thumbnailThread.getLooper();
+        Log.i(TAG, "Background thread started");
     }
 
     @Nullable
@@ -62,16 +80,49 @@ public class PhotoGalleryFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        thumbnailThread.clearQueue();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        thumbnailThread.quit();
+        Log.i(TAG, "Background thread destroyed");
+    }
+
     void setupdAdapter() {
         if (getActivity() == null ||gridView == null) {
             return;
         }
 
         if (items != null) {
-            gridView.setAdapter(new ArrayAdapter<GalleryItem>(getActivity(),
-                    android.R.layout.simple_gallery_item, items));
+            gridView.setAdapter(new GalleryItemsAdapter(items));
         } else {
             gridView.setAdapter(null);
+        }
+    }
+
+    private class GalleryItemsAdapter extends ArrayAdapter<GalleryItem> {
+
+        public GalleryItemsAdapter(ArrayList<GalleryItem> items) {
+            super(getActivity(), 0, items);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.gallery_item, parent, false);
+            }
+
+            ImageView imageView = (ImageView) convertView.findViewById(R.id.gallery_item_imageView);
+            imageView.setImageResource(R.drawable.placeholder);
+            GalleryItem item = getItem(position);
+            thumbnailThread.queueThumbnail(imageView, item.getUrl());
+
+            return convertView;
         }
     }
 
