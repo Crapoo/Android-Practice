@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
@@ -21,7 +22,10 @@ public class PhotoGalleryFragment extends Fragment {
     private static final String TAG = "PhotoGalleryFragment";
 
     private GridView gridView;
-    ArrayList<GalleryItem> items;
+    private ArrayList<GalleryItem> items;
+    private int currentPage = 1;
+    private int fetchedPage = 0;
+    private int gridScrollPosition;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,7 +42,21 @@ public class PhotoGalleryFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
 
         gridView = (GridView) v.findViewById(R.id.gridView);
+        gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
 
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount > 0 && currentPage == fetchedPage) {
+                    gridScrollPosition = firstVisibleItem;
+                    currentPage++;
+                    new FetchItemsTask().execute();
+                }
+            }
+        });
         setupdAdapter();
 
         return v;
@@ -61,13 +79,19 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         protected ArrayList<GalleryItem> doInBackground(Void... params) {
-            return new FlickrFetchr().fetchItems();
+            return new FlickrFetchr().fetchItems(currentPage);
         }
 
         @Override
         protected void onPostExecute(ArrayList<GalleryItem> galleryItems) {
-            items = galleryItems;
+            if (items == null) {
+                items = galleryItems;
+            } else {
+                items.addAll(galleryItems);
+            }
             setupdAdapter();
+            gridView.setSelection(gridScrollPosition);
+            fetchedPage++;
         }
     }
 }
