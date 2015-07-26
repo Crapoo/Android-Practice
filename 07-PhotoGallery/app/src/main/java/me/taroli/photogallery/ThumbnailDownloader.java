@@ -1,10 +1,13 @@
 package me.taroli.photogallery;
 
+import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import java.io.IOException;
@@ -24,9 +27,12 @@ public class ThumbnailDownloader<Token> extends HandlerThread {
     private Listener<Token> listener;
     private Map<Token, String> requestMap = Collections.synchronizedMap(new HashMap<Token, String>());
 
+    private final LruCache<String, Bitmap> cache;
+
     public ThumbnailDownloader(Handler responseHandler) {
         super(TAG);
         this.responseHandler = responseHandler;
+        cache = new LruCache<>(10 * 1024 * 1024);
     }
 
     @Override
@@ -56,9 +62,19 @@ public class ThumbnailDownloader<Token> extends HandlerThread {
             if (url == null) {
                 return;
             }
-            byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
-            final Bitmap bitmap = new BitmapFactory().decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
-            Log.i(TAG, "Bitmap created");
+            final Bitmap bitmap;
+
+            synchronized (cache) {
+                if (cache.get(url) != null) {
+                    bitmap = cache.get(url);
+                    Log.i(TAG, "Bitmap taken from cache");
+                } else {
+                    byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+                    bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+                    Log.i(TAG, "Bitmap created");
+                    cache.put(url, bitmap);
+                }
+            }
 
             responseHandler.post(new Runnable() {
                 @Override
