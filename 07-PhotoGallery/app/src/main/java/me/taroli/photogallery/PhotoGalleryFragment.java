@@ -60,6 +60,7 @@ public class PhotoGalleryFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
 
         gridView = (GridView) v.findViewById(android.R.id.list);
+        gridView.setEmptyView(v.findViewById(android.R.id.empty));
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
