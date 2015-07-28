@@ -33,7 +33,7 @@ public class PhotoGalleryFragment extends Fragment {
     private ThumbnailDownloader<ImageView> thumbnailThread;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setRetainInstance(true);
@@ -51,7 +51,6 @@ public class PhotoGalleryFragment extends Fragment {
         });
         thumbnailThread.start();
         thumbnailThread.getLooper();
-        Log.i(TAG, "Background thread started");
     }
 
     @Nullable
@@ -95,7 +94,7 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     void setupdAdapter() {
-        if (getActivity() == null ||gridView == null) {
+        if (getActivity() == null || gridView == null) {
             return;
         }
 
