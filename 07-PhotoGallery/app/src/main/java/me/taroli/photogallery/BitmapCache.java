@@ -1,6 +1,7 @@
 package me.taroli.photogallery;
 
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.v4.util.LruCache;
 
 /**
@@ -11,7 +12,17 @@ public class BitmapCache {
     private static BitmapCache INSTANCE;
 
     public BitmapCache() {
-        this.cache = new LruCache<String, Bitmap>(100);
+        int cacheSize = 4 * 1024 * 1024;
+        this.cache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                    return value.getByteCount();
+                } else {
+                    return value.getRowBytes() * value.getHeight();
+                }
+            }
+        };
     }
 
     public static BitmapCache getINSTANCE() {
