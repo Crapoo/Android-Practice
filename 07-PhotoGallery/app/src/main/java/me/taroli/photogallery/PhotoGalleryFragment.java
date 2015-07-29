@@ -122,6 +122,17 @@ public class PhotoGalleryFragment extends Fragment {
             GalleryItem item = getItem(position);
             thumbnailThread.queueThumbnail(imageView, item.getUrl());
 
+            int limitDown = position - 10 >= 0 ? position - 10 : 0;
+            int limitUp = position + 10 <= items.size() ? position + 10 : items.size();
+            /* Preload */
+            for (int i = limitDown; i < limitUp; i++) {
+                if (i == position) {
+                    continue;
+                }
+                item = getItem(position);
+                thumbnailThread.queueThumbnail(item.getUrl());
+            }
+
             return convertView;
         }
     }

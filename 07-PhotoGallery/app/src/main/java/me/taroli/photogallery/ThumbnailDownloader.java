@@ -18,17 +18,13 @@ import java.util.Map;
 public class ThumbnailDownloader<Token> extends HandlerThread {
     private static final String TAG = "ThumbnailDownloader";
     private static final int MESSAGE_DOWNLOAD = 0;
-    /* TODO fix preload
-        private static final int MESSAGE_PRELOAD = 1;
-     */
+    private static final int MESSAGE_PRELOAD = 1;
 
     private Handler handler;
     private Handler responseHandler;
     private Listener<Token> listener;
+
     private Map<Token, String> requestMap = Collections.synchronizedMap(new HashMap<Token, String>());
-    /* TODO fix preload
-        private Map<String, String> preloadMap = Collections.synchronizedMap(new HashMap<String, String>());
-    */
 
     public ThumbnailDownloader(Handler responseHandler) {
         super(TAG);
@@ -44,32 +40,28 @@ public class ThumbnailDownloader<Token> extends HandlerThread {
                     Token token = (Token) msg.obj;
                     Log.i(TAG, "Got a request for url: " + requestMap.get(token));
                     handleRequest(token);
+                } else if (msg.what == MESSAGE_PRELOAD) {
+                    String url = (String) msg.obj;
+                    Log.i(TAG, "Got a preload request for url: " + url);
+                    handleRequest(url);
                 }
-                /* TODO fix preload
-                        else if (msg.what == MESSAGE_PRELOAD) {
-                        String id = (String) msg.obj;
-                        Log.i(TAG, "Got a preload request for url: " + preloadMap.get(id));
-                        handlePreloadRequest(id);
-                }*/
             }
         };
     }
 
     public void queueThumbnail(Token token, String url) {
+        if (url == null) {
+            return;
+        }
         Log.i(TAG, "Got an url: " + url);
         requestMap.put(token, url);
 
         handler.obtainMessage(MESSAGE_DOWNLOAD, token).sendToTarget();
     }
 
-    /* TODO fix preload
-        public void preloadThumbnail(String id, String url) {
-            Log.i(TAG, "Got an url for preload: " + url);
-            preloadMap.put(id, url);
-
-            handler.obtainMessage(MESSAGE_PRELOAD, id).sendToTarget();
-        }
-    */
+    public void queueThumbnail(String url) {
+        handler.obtainMessage(MESSAGE_PRELOAD, url).sendToTarget();
+    }
 
     private void handleRequest(final Token token) {
         try {
@@ -105,41 +97,25 @@ public class ThumbnailDownloader<Token> extends HandlerThread {
         }
     }
 
-    /* TODO fix preload
-        private void handlePreloadRequest(final String id) {
-            try {
-                final String url = preloadMap.get(id);
-                if (url == null) {
-                    return;
-                }
-
-                final Bitmap bitmap;
-
-                if (BitmapCache.getINSTANCE().get(url) != null) {
-                    bitmap = BitmapCache.getINSTANCE().get(url);
-                    Log.i(TAG, "Bitmap taken from cache");
-                } else {
-                    byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
-                    bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
-                    Log.i(TAG, "Bitmap created");
-                    BitmapCache.getINSTANCE().put(url, bitmap);
-                }
-
-                responseHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (preloadMap.get(id) != url) {
-                            return;
-                        }
-
-                        preloadMap.remove(id);
-                    }
-                });
-            } catch (IOException e) {
-                Log.e(TAG, "Error downloading image ", e);
-            }
+    private void handleRequest(final String url) {
+        if (url == null) {
+            return;
         }
-    */
+
+        try {
+            final Bitmap bitmap;
+            if (BitmapCache.getINSTANCE().get(url) == null) {
+                byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+                bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+                BitmapCache.getINSTANCE().put(url, bitmap);
+                Log.i(TAG, "Bitmap preloaded");
+            } else {
+                Log.i(TAG, "Bitmap not preloaded - already cached");
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Error downloading image ", e);
+        }
+    }
 
     public void setListener(Listener<Token> listener) {
         this.listener = listener;
