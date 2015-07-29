@@ -22,11 +22,15 @@ public class FlickrFetchr {
     public static final String TAG = "FlickrFetchr";
     private static final String XML_PHOTO = "photo";
 
+    public static final String PREF_SEARCH_QUERY = "searchQuery";
+
     private static final String ENDPOINT = "https://api.flickr.com/services/rest";
     private static final String API_KEY = "ebe105d784b84fbe383293b12830a44c";
     private static final String METHOD_GET_RECENT = "flickr.photos.getRecent";
+    private static final String METHOD_SEARCH = "flickr.photos.search";
     private static final String PARAM_EXTRA = "extras";
     private static final String EXTRA_SMALL_URL = "url_s";
+    private static final String PARAM_TEXT = "text";
 
     byte[] getUrlBytes(String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
@@ -55,16 +59,10 @@ public class FlickrFetchr {
         return new String(getUrlBytes(urlSpec));
     }
 
-    public ArrayList<GalleryItem> fetchItems(int page) {
+    public ArrayList<GalleryItem> downloadGalleryItems(String url, int page) {
         ArrayList<GalleryItem> items = new ArrayList<>();
 
         try {
-            String url = Uri.parse(ENDPOINT).buildUpon()
-                    .appendQueryParameter("method", METHOD_GET_RECENT)
-                    .appendQueryParameter("api_key", API_KEY)
-                    .appendQueryParameter(PARAM_EXTRA, EXTRA_SMALL_URL)
-                    .appendQueryParameter("page", "" + page)
-                    .build().toString();
             String xmlString = getUrl(url);
             Log.i(TAG, "Received xml : " + xmlString);
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -79,6 +77,26 @@ public class FlickrFetchr {
         }
 
         return items;
+    }
+
+    public ArrayList<GalleryItem> fetchItems(int page) {
+        String url = Uri.parse(ENDPOINT).buildUpon()
+                .appendQueryParameter("method", METHOD_GET_RECENT)
+                .appendQueryParameter("api_key", API_KEY)
+                .appendQueryParameter(PARAM_EXTRA, EXTRA_SMALL_URL)
+                .appendQueryParameter("page", "" + page)
+                .build().toString();
+        return downloadGalleryItems(url, page);
+    }
+
+    public ArrayList<GalleryItem> search(String query, int page) {
+        String url = Uri.parse(ENDPOINT).buildUpon()
+                .appendQueryParameter("method", METHOD_SEARCH)
+                .appendQueryParameter("api_key", API_KEY)
+                .appendQueryParameter(PARAM_EXTRA, EXTRA_SMALL_URL)
+                .appendQueryParameter(PARAM_TEXT, query)
+                .build().toString();
+        return downloadGalleryItems(url, page);
     }
 
     void parseItems(ArrayList<GalleryItem> items, XmlPullParser parser)
