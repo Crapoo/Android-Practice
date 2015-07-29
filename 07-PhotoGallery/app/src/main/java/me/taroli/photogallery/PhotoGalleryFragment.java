@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -108,7 +109,7 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_photo_gallery, menu);
-        /*
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             MenuItem searchItem = menu.findItem(R.id.menu_item_search);
             SearchView searchView = (SearchView)searchItem.getActionView();
@@ -119,7 +120,7 @@ public class PhotoGalleryFragment extends Fragment {
             SearchableInfo searchInfo = searchManager.getSearchableInfo(name);
 
             searchView.setSearchableInfo(searchInfo);
-        } */
+        }
     }
 
     @Override
