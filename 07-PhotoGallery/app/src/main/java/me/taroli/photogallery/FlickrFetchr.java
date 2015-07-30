@@ -20,10 +20,11 @@ import java.util.ArrayList;
  */
 public class FlickrFetchr {
     public static final String TAG = "FlickrFetchr";
-    private static final String XML_PHOTO = "photo";
 
     public static final String PREF_SEARCH_QUERY = "searchQuery";
+    public static final String PREF_LAST_RESULT_ID = "lastResultId";
 
+    private static final String XML_PHOTO = "photo";
     private static final String ENDPOINT = "https://api.flickr.com/services/rest";
     private static final String API_KEY = "ebe105d784b84fbe383293b12830a44c";
     private static final String METHOD_GET_RECENT = "flickr.photos.getRecent";
@@ -64,7 +65,6 @@ public class FlickrFetchr {
 
         try {
             String xmlString = getUrl(url);
-            Log.i(TAG, "Received xml : " + xmlString);
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             XmlPullParser parser = factory.newPullParser();
             parser.setInput(new StringReader(xmlString));
