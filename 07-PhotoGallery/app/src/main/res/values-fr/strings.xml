@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PhotoGallery</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="clear_search">Effacer la recherche</string>
+    <string name="new_pictures_text">Vous avez de nouvelles pictures dans PhotoGallery</string>
+    <string name="new_pictures_title">Nouvelles photo dans PhotoGallery</string>
+    <string name="photo_gallery_empty">Oups.. Etes-vous connecté à internet?</string>
+    <string name="search">Rechercher</string>
+    <string name="search_hint">Rechercher sur Flickr</string>
+    <string name="start_polling">Sonder de nouvelles photos</string>
+    <string name="stop_polling">Arreter le sondage</string>
+</resources>
