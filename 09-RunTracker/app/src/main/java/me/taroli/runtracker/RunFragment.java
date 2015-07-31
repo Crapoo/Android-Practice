@@ -14,6 +14,8 @@ import android.widget.TextView;
  */
 public class RunFragment extends Fragment {
 
+    private RunManager runManager;
+
     private Button startBtn, stopBtn;
     private TextView startedTv, latitudeTv, longitudeTv, altitudeTv, durationTv;
 
@@ -21,6 +23,7 @@ public class RunFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        runManager = RunManager.get(getActivity());
     }
 
     @Nullable
@@ -29,14 +32,36 @@ public class RunFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_run, container, false);
 
         startBtn = (Button) v.findViewById(R.id.run_startButton);
+        startBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runManager.startLocationUpdates();
+                updateUI();
+            }
+        });
         stopBtn = (Button) v.findViewById(R.id.run_stopButton);
-
+        stopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runManager.stopLocationUpdates();
+                updateUI();
+            }
+        });
         startedTv = (TextView) v.findViewById(R.id.run_startedTextView);
         latitudeTv = (TextView) v.findViewById(R.id.run_latitudeTextView);
         longitudeTv = (TextView) v.findViewById(R.id.run_longitudeTextView);
         altitudeTv = (TextView) v.findViewById(R.id.run_altitudeTextView);
         durationTv = (TextView) v.findViewById(R.id.run_durationTextView);
 
+        updateUI();
+
         return v;
+    }
+
+    private void updateUI() {
+        boolean started = runManager.isTrackingRun();
+
+        startBtn.setEnabled(!started);
+        stopBtn.setEnabled(started);
     }
 }
