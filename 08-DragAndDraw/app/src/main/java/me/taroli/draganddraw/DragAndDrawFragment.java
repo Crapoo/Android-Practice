@@ -18,4 +18,5 @@ public class DragAndDrawFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_drag_and_draw, container, false);
         return v;
     }
+
 }
