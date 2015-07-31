@@ -3,6 +3,7 @@ package me.taroli.runtracker;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.location.LocationManager;
 
 /**
@@ -41,8 +42,20 @@ public class RunManager {
     public void startLocationUpdates() {
         String provider = LocationManager.GPS_PROVIDER;
 
+        Location lastKnown = locationManager.getLastKnownLocation(provider);
+        if (lastKnown != null) {
+            lastKnown.setTime(System.currentTimeMillis());
+            broadcastLocation(lastKnown);
+        }
+
         PendingIntent pi = getLocationPendingIntent(true);
         locationManager.requestLocationUpdates(provider, 0, 0, pi);
+    }
+
+    private void broadcastLocation(Location location) {
+        Intent broadcast = new Intent(ACTION_LOCATION);
+        broadcast.putExtra(LocationManager.KEY_LOCATION_CHANGED, location);
+        appContext.sendBroadcast(broadcast);
     }
 
     public void stopLocationUpdates() {
