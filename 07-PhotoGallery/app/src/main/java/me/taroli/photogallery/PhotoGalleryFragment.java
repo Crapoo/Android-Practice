@@ -37,7 +37,7 @@ import java.util.ArrayList;
 /**
  * Created by Matt on 24/07/15.
  */
-public class PhotoGalleryFragment extends Fragment {
+public class PhotoGalleryFragment extends VisibleFragment {
     private static final String TAG = "PhotoGalleryFragment";
     private static final int RECENT = 0;
     private static final int SEARCH = 1;

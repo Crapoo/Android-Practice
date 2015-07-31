@@ -1,5 +1,6 @@
 package me.taroli.photogallery;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -24,6 +26,12 @@ public class PollService extends IntentService {
 
     private static final int POLL_INTERVAL = 1000 * 60 * 5;
     public static final String PREF_IS_ALARM_ON = "isAlarmOn";
+
+    public static final String ACTION_SHOW_NOTIFICATION =
+            "me.taroli.android.photogallery.SHOW_NOTIFICATION";
+
+    public static final String PERM_PRIVATE =
+            "me.taroli.photogallery.PRIVATE";
 
     public PollService() {
         super(TAG);
@@ -72,10 +80,7 @@ public class PollService extends IntentService {
                     .setAutoCancel(true)
                     .build();
 
-            NotificationManager notificationManager = (NotificationManager)
-                    getSystemService(NOTIFICATION_SERVICE);
-
-            notificationManager.notify(0, notif);
+            showBackgroundNotification(0, notif);
         }
 
         prefs.edit()
@@ -108,5 +113,14 @@ public class PollService extends IntentService {
         PendingIntent pi = PendingIntent.getService(
                 context, 0, i, PendingIntent.FLAG_NO_CREATE);
         return pi != null;
+    }
+
+    void showBackgroundNotification(int requestCode, Notification notification) {
+        Intent i = new Intent(ACTION_SHOW_NOTIFICATION);
+        i.putExtra("REQUEST CODE", requestCode);
+        i.putExtra("NOTIFICATION", notification);
+
+        sendOrderedBroadcast(i, PERM_PRIVATE, null, null,
+                Activity.RESULT_OK, null, null);
     }
 }
