@@ -19,10 +19,16 @@ import android.widget.Toast;
  */
 public class RunFragment extends Fragment {
 
+    private static final String TAG = "RunFragment";
+    private static final String ARG_RUN_ID = "RUN_ID";
+
     private BroadcastReceiver locationReceiver = new LocationReceiver() {
 
         @Override
         public void onLocationReceived(Context context, Location loc) {
+            if (!runManager.isTrackingRun(run)) {
+                return;
+            }
             lastLocation = loc;
             if (isVisible()) {
                 updateUI();
@@ -44,11 +50,28 @@ public class RunFragment extends Fragment {
     private Button startBtn, stopBtn;
     private TextView startedTv, latitudeTv, longitudeTv, altitudeTv, durationTv;
 
+    public static RunFragment newInstance(long runId) {
+        Bundle args = new Bundle();
+        args.putLong(ARG_RUN_ID, runId);
+        RunFragment fragment = new RunFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         runManager = RunManager.get(getActivity());
+
+        Bundle args = getArguments();
+        if (args != null) {
+            long runId = args.getLong(ARG_RUN_ID, -1);
+            if (runId != -1) {
+                run = runManager.getRun(runId);
+                lastLocation = runManager.getLastLocationForRun(runId);
+            }
+        }
     }
 
     @Nullable
@@ -60,7 +83,11 @@ public class RunFragment extends Fragment {
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                run = runManager.startNewRun();
+                if (run == null) {
+                    run = runManager.startNewRun();
+                } else {
+                    runManager.startTrackingRun(run);
+                }
                 updateUI();
             }
         });
@@ -98,6 +125,7 @@ public class RunFragment extends Fragment {
 
     private void updateUI() {
         boolean started = runManager.isTrackingRun();
+        boolean trackingThisRun = runManager.isTrackingRun(run);
 
         if (run != null) {
             startedTv.setText(run.getStartDate().toString());
@@ -113,6 +141,6 @@ public class RunFragment extends Fragment {
         durationTv.setText(Run.formatDuration(durationSeconds));
 
         startBtn.setEnabled(!started);
-        stopBtn.setEnabled(started);
+        stopBtn.setEnabled(started && trackingThisRun);
     }
 }

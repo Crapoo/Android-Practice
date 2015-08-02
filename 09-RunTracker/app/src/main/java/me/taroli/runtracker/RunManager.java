@@ -8,6 +8,8 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
+import me.taroli.runtracker.RunDatabaseHelper.RunCursor;
+
 /**
  * Created by Matt on 31/07/15.
  */
@@ -95,6 +97,32 @@ public class RunManager {
         return run;
     }
 
+    public Run getRun(long id) {
+        Run run = null;
+        RunCursor cursor = dbHelper.queryRun(id);
+        cursor.moveToFirst();
+        if (!cursor.isAfterLast()) {
+            run = cursor.getRun();
+        }
+        cursor.close();
+        return  run;
+    }
+
+    public Location getLastLocationForRun(long runId) {
+        Location loc = null;
+        RunDatabaseHelper.LocationCursor cursor = dbHelper.queryLastLocationForRun(runId);
+        cursor.moveToFirst();
+        if (!cursor.isAfterLast()) {
+            loc = cursor.getLocation();
+        }
+        cursor.close();
+        return loc;
+    }
+
+    public RunCursor queryRuns() {
+        return dbHelper.queryRuns();
+    }
+
     public void insertLocation(Location location) {
         if (currentRunId != -1) {
             dbHelper.insertLocation(currentRunId, location);
@@ -113,5 +141,9 @@ public class RunManager {
 
     public boolean isTrackingRun() {
         return getLocationPendingIntent(false) != null;
+    }
+
+    public boolean isTrackingRun(Run run) {
+        return run != null && run.getId() == currentRunId;
     }
 }
