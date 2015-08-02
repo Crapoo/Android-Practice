@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.Log;
 
 /**
  * Created by Matt on 31/07/15.
@@ -92,6 +93,14 @@ public class RunManager {
         Run run = new Run();
         run.setId(dbHelper.insertRun(run));
         return run;
+    }
+
+    public void insertLocation(Location location) {
+        if (currentRunId != -1) {
+            dbHelper.insertLocation(currentRunId, location);
+        } else {
+            Log.e(TAG, "Location received with no tracking run; ignoring");
+        }
     }
 
     public void stopLocationUpdates() {

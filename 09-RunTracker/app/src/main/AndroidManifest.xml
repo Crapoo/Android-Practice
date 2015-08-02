@@ -23,7 +23,7 @@
         </activity>
 
         <receiver
-            android:name=".LocationReceiver"
+            android:name=".TrackingLocationReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="me.taroli.runtracker.ACTION_LOCATION" />
