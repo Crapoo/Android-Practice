@@ -1,12 +1,18 @@
 package me.taroli.runtracker;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +26,10 @@ import android.widget.Toast;
 public class RunFragment extends Fragment {
 
     private static final String TAG = "RunFragment";
-    private static final String ARG_RUN_ID = "RUN_ID";
+    private static final int NOTIFICATION_ID = 0;
+
+    public static final String ARG_RUN_ID = "RUN_ID";
+
 
     private BroadcastReceiver locationReceiver = new LocationReceiver() {
 
@@ -88,6 +97,7 @@ public class RunFragment extends Fragment {
                 } else {
                     runManager.startTrackingRun(run);
                 }
+                showNotif();
                 updateUI();
             }
         });
@@ -96,6 +106,7 @@ public class RunFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 runManager.stopRun();
+                hideNotif();
                 updateUI();
             }
         });
@@ -142,5 +153,42 @@ public class RunFragment extends Fragment {
 
         startBtn.setEnabled(!started);
         stopBtn.setEnabled(started && trackingThisRun);
+    }
+
+    private void showNotif() {
+        long currentRunId = getActivity().getSharedPreferences(
+                RunManager.PREFS_FILE, Context.MODE_PRIVATE).
+                getLong(RunManager.PREF_CURRENT_RUN_ID, -1);
+
+        if (currentRunId == -1) {
+            return;
+        }
+
+        Intent i = new Intent(getActivity(), RunActivity.class);
+        i.putExtra(RunFragment.ARG_RUN_ID, currentRunId);
+
+        PendingIntent pi = PendingIntent
+                .getActivity(getActivity(), 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Resources resources = getResources();
+
+        Notification notif = new NotificationCompat.Builder(getActivity())
+                .setTicker(resources.getString(R.string.app_name))
+                .setSmallIcon(android.R.drawable.ic_menu_report_image)
+                .setContentTitle(resources.getString(R.string.app_name))
+                .setContentText(resources.getString(R.string.tracking_run, currentRunId))
+                .setContentIntent(pi)
+                .setAutoCancel(false)
+                .build();
+
+        NotificationManager notificationManager =
+                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(TAG, NOTIFICATION_ID, notif);
+    }
+
+    private void hideNotif() {
+        NotificationManager notificationManager =
+                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(TAG, NOTIFICATION_ID);
     }
 }

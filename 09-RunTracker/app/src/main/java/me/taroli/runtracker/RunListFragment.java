@@ -1,12 +1,16 @@
 package me.taroli.runtracker;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
+import android.support.v7.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -61,7 +65,7 @@ public class RunListFragment extends ListFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (REQUEST_NEW_RUN == requestCode || REQUEST_CONTINUE_RUN == requestCode){
+        if (REQUEST_NEW_RUN == requestCode || REQUEST_CONTINUE_RUN == requestCode) {
             cursor.requery();
             ((RunCursorAdapter) getListAdapter()).notifyDataSetChanged();
         }
@@ -72,6 +76,11 @@ public class RunListFragment extends ListFragment {
         Intent i = new Intent(getActivity(), RunActivity.class);
         i.putExtra(RunActivity.EXTRA_RUN_ID, id);
         startActivityForResult(i, REQUEST_CONTINUE_RUN);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override

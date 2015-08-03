@@ -11,5 +11,7 @@
     <string name="gps_disabled">GPS disabled</string>
     <string name="cell_text">Run at %1$s</string>
     <string name="new_run">New run</string>
+    <string name="current_run_id">Run n° %d</string>
+    <string name="tracking_run">Currently tracking your run number %d</string>
 
 </resources>
