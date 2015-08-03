@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,7 +25,10 @@ import me.taroli.runtracker.RunDatabaseHelper.RunCursor;
  */
 public class RunListFragment extends ListFragment {
 
+    private static final String TAG = "RunListFragment";
+
     private static final int REQUEST_NEW_RUN = 0;
+    private static final int REQUEST_CONTINUE_RUN = 1;
 
     RunCursor cursor;
 
@@ -57,7 +61,7 @@ public class RunListFragment extends ListFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (REQUEST_NEW_RUN == requestCode) {
+        if (REQUEST_NEW_RUN == requestCode || REQUEST_CONTINUE_RUN == requestCode){
             cursor.requery();
             ((RunCursorAdapter) getListAdapter()).notifyDataSetChanged();
         }
@@ -67,7 +71,7 @@ public class RunListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         Intent i = new Intent(getActivity(), RunActivity.class);
         i.putExtra(RunActivity.EXTRA_RUN_ID, id);
-        startActivity(i);
+        startActivityForResult(i, REQUEST_CONTINUE_RUN);
     }
 
     @Override
@@ -97,6 +101,13 @@ public class RunListFragment extends ListFragment {
             Run run = runCursor.getRun();
 
             TextView startDateTv = (TextView) view;
+
+            if (RunManager.get(context).isTrackingRun(run)) {
+                startDateTv.setBackgroundResource(android.R.color.darker_gray);
+            } else {
+                startDateTv.setBackgroundResource(android.R.color.transparent);
+            }
+
             DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
             String cellText =
                     context.getString(R.string.cell_text, df.format(run.getStartDate()));
