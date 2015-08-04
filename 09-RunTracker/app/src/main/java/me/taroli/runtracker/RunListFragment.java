@@ -1,16 +1,13 @@
 package me.taroli.runtracker;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v7.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,22 +24,18 @@ import me.taroli.runtracker.RunDatabaseHelper.RunCursor;
 /**
  * Created by Matt on 3/08/15.
  */
-public class RunListFragment extends ListFragment {
+public class RunListFragment extends ListFragment implements LoaderCallbacks<Cursor> {
 
     private static final String TAG = "RunListFragment";
 
     private static final int REQUEST_NEW_RUN = 0;
     private static final int REQUEST_CONTINUE_RUN = 1;
 
-    RunCursor cursor;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        cursor = RunManager.get(getActivity()).queryRuns();
-        RunCursorAdapter adapter = new RunCursorAdapter(getActivity(), cursor);
-        setListAdapter(adapter);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -66,8 +59,7 @@ public class RunListFragment extends ListFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (REQUEST_NEW_RUN == requestCode || REQUEST_CONTINUE_RUN == requestCode) {
-            cursor.requery();
-            ((RunCursorAdapter) getListAdapter()).notifyDataSetChanged();
+            getLoaderManager().restartLoader(0, null, this);
         }
     }
 
@@ -84,9 +76,19 @@ public class RunListFragment extends ListFragment {
     }
 
     @Override
-    public void onDestroy() {
-        cursor.close();
-        super.onDestroy();
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new RunListCursorLoader(getActivity());
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        RunCursorAdapter adapter = new RunCursorAdapter(getActivity(), (RunCursor)data);
+        setListAdapter(adapter);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        setListAdapter(null);
     }
 
     private static class RunCursorAdapter extends CursorAdapter {
@@ -121,6 +123,19 @@ public class RunListFragment extends ListFragment {
             String cellText =
                     context.getString(R.string.cell_text, df.format(run.getStartDate()));
             startDateTv.setText(cellText);
+        }
+    }
+
+    private static class RunListCursorLoader extends SQLiteCursorLoader {
+
+
+        public RunListCursorLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected Cursor loadCursor() {
+            return RunManager.get(getContext()).queryRuns();
         }
     }
 }
