@@ -168,7 +168,7 @@ public class RunFragment extends Fragment {
         }
 
         Intent i = new Intent(getActivity(), RunActivity.class);
-        i.putExtra(RunFragment.ARG_RUN_ID, currentRunId);
+        i.putExtra(RunActivity.EXTRA_RUN_ID, currentRunId);
 
         PendingIntent pi = PendingIntent
                 .getActivity(getActivity(), 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -177,7 +177,7 @@ public class RunFragment extends Fragment {
 
         Notification notif = new NotificationCompat.Builder(getActivity())
                 .setTicker(resources.getString(R.string.app_name))
-                .setSmallIcon(android.R.drawable.ic_menu_report_image)
+                .setSmallIcon(android.R.drawable.ic_menu_compass)
                 .setContentTitle(resources.getString(R.string.app_name))
                 .setContentText(resources.getString(R.string.tracking_run, currentRunId))
                 .setContentIntent(pi)
