@@ -13,5 +13,9 @@
     <string name="new_run">New run</string>
     <string name="current_run_id">Run n° %d</string>
     <string name="tracking_run">Currently tracking your run number %d</string>
-
+    <string name="map">Map</string>
+    <string name="run_start">Run start</string>
+    <string name="run_started_at">Run started at %s</string>
+    <string name="run_finish">Run finish</string>
+    <string name="run_finished_at">Run finished at %s</string>
 </resources>

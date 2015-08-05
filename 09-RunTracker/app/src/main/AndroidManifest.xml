@@ -2,9 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="me.taroli.runtracker">
 
+    <permission
+        android:name="me.taroli.runtracker.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="me.taroli.runtracker.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.write_external_storage" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.access_coarse_location" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <uses-feature
         android:name="android.hardware.location.gps"
+        android:required="true" />
+    <uses-feature
+        android:glEsVersion="0x00020000"
         android:required="true" />
 
     <application
@@ -24,6 +37,9 @@
         <activity
             android:name=".RunActivity"
             android:label="@string/app_name" />
+        <activity
+            android:name=".RunMapActivity"
+            android:label="@string/app_name" />
 
         <receiver
             android:name=".TrackingLocationReceiver"
@@ -32,6 +48,11 @@
                 <action android:name="me.taroli.runtracker.ACTION_LOCATION" />
             </intent-filter>
         </receiver>
+
+        <!-- TODO Before building, add maps key here-->
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="MAPS_KEY"/>
     </application>
 
 </manifest>

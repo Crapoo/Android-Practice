@@ -58,7 +58,7 @@ public class RunFragment extends Fragment {
     private Run run;
     private Location lastLocation;
 
-    private Button startBtn, stopBtn;
+    private Button startBtn, stopBtn, mapBtn;
     private TextView startedTv, latitudeTv, longitudeTv, altitudeTv, durationTv;
 
     public static RunFragment newInstance(long runId) {
@@ -113,6 +113,15 @@ public class RunFragment extends Fragment {
                 updateUI();
             }
         });
+        mapBtn = (Button) v.findViewById(R.id.run_mapButton);
+        mapBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), RunMapActivity.class);
+                i.putExtra(RunMapActivity.EXTRA_RUN_ID, run.getId());
+                startActivity(i);
+            }
+        });
         startedTv = (TextView) v.findViewById(R.id.run_startedTextView);
         latitudeTv = (TextView) v.findViewById(R.id.run_latitudeTextView);
         longitudeTv = (TextView) v.findViewById(R.id.run_longitudeTextView);
@@ -151,6 +160,9 @@ public class RunFragment extends Fragment {
             latitudeTv.setText(Double.toString(lastLocation.getLatitude()));
             longitudeTv.setText(Double.toString(lastLocation.getLongitude()));
             altitudeTv.setText(Double.toString(lastLocation.getAltitude()));
+            mapBtn.setEnabled(true);
+        } else {
+            mapBtn.setEnabled(false);
         }
         durationTv.setText(Run.formatDuration(durationSeconds));
 

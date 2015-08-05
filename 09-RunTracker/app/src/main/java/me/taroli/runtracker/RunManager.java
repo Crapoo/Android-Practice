@@ -119,6 +119,10 @@ public class RunManager {
         return loc;
     }
 
+    public RunDatabaseHelper.LocationCursor getLocationsForRun(long runId) {
+        return dbHelper.queryLocationsForRun(runId);
+    }
+
     public RunCursor queryRuns() {
         return dbHelper.queryRuns();
     }
